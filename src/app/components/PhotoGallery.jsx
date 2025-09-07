@@ -1,7 +1,8 @@
 "use client"
 
 import { motion } from "motion/react"
-import { Camera, ArrowRight } from "lucide-react"
+import { useState } from "react"
+import { Camera, ArrowRight, Heart } from "lucide-react"
 import { Swiper, SwiperSlide } from 'swiper/react'
 import { EffectCube, Pagination } from 'swiper/modules'
 import 'swiper/css'
@@ -9,11 +10,19 @@ import 'swiper/css/effect-cube'
 import 'swiper/css/pagination'
 
 export default function PhotoGallery({ onNext }) {
-
     const photos = [
-        { id: 1, src: "/images/1.jpg" },
-        { id: 2, src: "/images/2.jpg" },
+        { id: 1, src: "/images/1.jpg" }
     ]
+
+    // Loader and love animation state
+    const [imageLoaded, setImageLoaded] = useState(false);
+    const [showHearts, setShowHearts] = useState(false);
+
+    const handleImageLoad = () => {
+        setImageLoaded(true);
+        setShowHearts(true);
+        setTimeout(() => setShowHearts(false), 2000); // Show hearts for 2 seconds
+    };
 
     return (
         <motion.div
@@ -63,11 +72,57 @@ export default function PhotoGallery({ onNext }) {
                 >
                     {photos.map((photo, index) => (
                         <SwiperSlide key={photo.id}>
-                            <img
-                                src={photo.src || "/placeholder.svg"}
-                                alt={`Memory ${index + 1}`}
-                                className="w-full h-full object-cover rounded-xl"
-                            />
+                            <div className="relative w-full h-full flex items-center justify-center">
+                                {!imageLoaded && (
+                                    <motion.div
+                                        className="absolute inset-0 flex items-center justify-center bg-black/10 z-20"
+                                        initial={{ opacity: 0 }}
+                                        animate={{ opacity: 1 }}
+                                        exit={{ opacity: 0 }}
+                                        transition={{ duration: 0.4 }}
+                                    >
+                                        <motion.div
+                                            animate={{ rotate: 360 }}
+                                            transition={{ repeat: Infinity, duration: 1.2, ease: "linear" }}
+                                            className="flex items-center justify-center"
+                                        >
+                                            <Heart className="w-14 h-14 text-pink-400 animate-pulse" />
+                                        </motion.div>
+                                    </motion.div>
+                                )}
+                                <img
+                                    src={photo.src || "/placeholder.svg"}
+                                    alt={`Memory ${index + 1}`}
+                                    className={`w-full h-full object-cover rounded-xl transition-opacity duration-500 ${imageLoaded ? 'opacity-100' : 'opacity-0'}`}
+                                    onLoad={handleImageLoad}
+                                />
+                                {showHearts && imageLoaded && (
+                                    <div className="absolute inset-0 pointer-events-none z-10">
+                                        {[...Array(18)].map((_, i) => {
+                                            // Randomize heart color, size, rotation, and horizontal position
+                                            const colors = ["text-pink-400", "text-red-400", "text-purple-400", "text-fuchsia-400", "text-rose-400"];
+                                            const color = colors[Math.floor(Math.random() * colors.length)];
+                                            const size = Math.random() * 16 + 24; // 24px to 40px
+                                            const rotate = Math.random() * 360;
+                                            const scale = Math.random() * 0.5 + 0.8;
+                                            const left = Math.random() * 80 + 10; // 10% to 90%
+                                            const delay = i * 0.08 + Math.random() * 0.2;
+                                            return (
+                                                <motion.div
+                                                    key={i}
+                                                    initial={{ y: -60, opacity: 0, scale: scale, rotate: rotate }}
+                                                    animate={{ y: 420, opacity: 1, scale: scale + 0.2, rotate: rotate + 60 }}
+                                                    exit={{ opacity: 0 }}
+                                                    transition={{ duration: 2.2, delay }}
+                                                    style={{ position: 'absolute', left: `${left}%`, top: 0 }}
+                                                >
+                                                    <Heart className={`drop-shadow-lg ${color}`} style={{ width: size, height: size }} />
+                                                </motion.div>
+                                            );
+                                        })}
+                                    </div>
+                                )}
+                            </div>
                         </SwiperSlide>
                     ))}
                 </Swiper>

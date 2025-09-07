@@ -19,6 +19,7 @@ export default function Countdown({ birthdayDate, onComplete }) {
             const distance = birthdayDate.getTime() - now
 
             if (distance <= 0) {
+               clearInterval(timer)
                 onComplete()
                 return
             }

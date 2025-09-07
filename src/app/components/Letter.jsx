@@ -11,7 +11,7 @@ export default function Letter() {
     const [currentText, setCurrentText] = useState("")
     const [showCursor, setShowCursor] = useState(true)
 
-    const letterText = `My Dearest Madam Jii,
+    const letterText = `My Dear Nandani,
 
 On this very special day, I want you to know how incredibly grateful I am to have you in my life. Your birthday isn't just a celebration of another year - it's a celebration of all the joy, laughter, and beautiful memories you bring to this world.
 

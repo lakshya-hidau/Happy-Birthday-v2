@@ -1,6 +1,6 @@
 "use client"
 
-import { motion } from "framer-motion"
+import { motion } from "motion/react"
 
 export default function Loader() {
 
@@ -37,6 +37,17 @@ export default function Loader() {
                 >
                     For someone very special...
                 </motion.p>
+
+                {/* Birthday Girl Name with different font */}
+                <motion.div
+                    className="mt-2 text-2xl md:text-4xl text-pink-400 font-cursive"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 1 }}
+                    style={{ fontFamily: 'Pacifico, cursive' }}
+                >
+                    Nandani💝
+                </motion.div>
             </div>
         </motion.div>
     )

@@ -3,11 +3,16 @@
 import { motion } from "motion/react"
 import { Gift, Sparkles, Heart } from "lucide-react"
 import confetti from "canvas-confetti"
-import { useEffect } from "react"
+import { useEffect, useRef } from "react"
 
-export default function Celebration({ onNext }) {
+export default function Celebration({ onNext, onMusicStart }) {
     const colors = ["#ff69b4", "#ff1493", "#9370db"]
+    const audioRef = useRef(null);
+
     useEffect(() => {
+        if (onMusicStart) {
+            onMusicStart();
+        }
         const duration = 2500
         const end = Date.now() + duration
 
@@ -32,6 +37,21 @@ export default function Celebration({ onNext }) {
         frame()
     }, [])
 
+    // Play song and go to next screen
+    const handleCelebrate = () => {
+        // Play audio only after user interaction
+        if (audioRef.current) {
+            audioRef.current.currentTime = 0;
+            audioRef.current.play();
+        }
+        if (onMusicStart) {
+            onMusicStart();
+        }
+        if (onNext) {
+            onNext();
+        }
+    };
+
     return (
         <motion.div
             className="min-h-screen flex flex-col items-center justify-center p-4 relative overflow-hidden"
@@ -40,6 +60,8 @@ export default function Celebration({ onNext }) {
             exit={{ opacity: 0, y: -100 }}
             transition={{ duration: 0.8 }}
         >
+            {/* Hidden audio element, set to loop */}
+            <audio ref={audioRef} src="/birthday-song.mp3" preload="auto" loop />
 
             <motion.div
                 className="text-center mb-12"
@@ -70,13 +92,22 @@ export default function Celebration({ onNext }) {
                 </motion.div>
 
                 <motion.h1
-                    className="text-5xl md:text-7xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-pink-400 via-purple-400 to-indigo-400 mb-6"
+                    className="text-5xl md:text-7xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-pink-400 via-purple-400 to-indigo-400 mb-2"
                     style={{
                         filter: "drop-shadow(0 0 30px rgba(255,105,180,0.5))",
                     }}
                 >
                     Time to Celebrate!
                 </motion.h1>
+                {/* Birthday Girl Name */}
+                <motion.h2
+                    className="text-3xl md:text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-purple-500 mb-6"
+                    initial={{ opacity: 0, y: 30 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.7 }}
+                >
+                    Nandani's Birthday 🎂
+                </motion.h2>
 
                 <motion.p
                     className="text-xl text-purple-300 mb-8"
@@ -99,7 +130,7 @@ export default function Celebration({ onNext }) {
                 }}
             >
                 <button
-                    onClick={onNext}
+                    onClick={handleCelebrate}
                     className="relative bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-500 hover:from-pink-600 hover:via-purple-600 hover:to-indigo-600 text-white text-lg px-8 py-4 rounded-full shadow-xl border-2 border-white/70 transition-all duration-300 hover:scale-[103%]"
                 >
                     <motion.div className="flex items-center space-x-2" whileTap={{ scale: 0.95 }}>
